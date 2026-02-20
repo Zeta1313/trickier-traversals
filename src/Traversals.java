@@ -11,7 +11,9 @@ public class Traversals {
    * @return the sum of leaf node values, or 0 if the tree is null
    */
   public static int sumLeafNodes(TreeNode<Integer> node) {
-    return 0;
+    if (node == null) return 0;
+    if (node.left == null && node.right == null) return node.value;
+    return sumLeafNodes(node.left) + sumLeafNodes(node.right);
   }
 
   /**
@@ -23,7 +25,9 @@ public class Traversals {
    * @return the count of internal nodes, or 0 if the tree is null
    */
   public static int countInternalNodes(TreeNode<Integer> node) {
-    return 0;
+    if (node == null) return 0;
+    if (node.left == null && node.right == null) return 0;
+    return countInternalNodes(node.left) + countInternalNodes(node.right) + 1;
   }
 
   /**
@@ -37,7 +41,8 @@ public class Traversals {
    * @return a post-order traversal string, or an empty string if the tree is null
    */
   public static <T> String buildPostOrderString(TreeNode<T> node) {
-    return null;
+    if (node == null) return "";
+    return buildPostOrderString(node.left) + buildPostOrderString(node.right) + node.value;
   }
 
   /**
@@ -49,7 +54,20 @@ public class Traversals {
    * @return a list of node values in a top-to-bottom order, or an empty list if the tree is null
    */
   public static <T> List<T> collectLevelOrderValues(TreeNode<T> node) {
-    return null;
+    if (node == null) return new ArrayList<>();
+    ArrayList<T> counts = new ArrayList<T>();
+    counts.add(node.value);
+    collectLevelOrderValues(node, counts);
+    return counts;
+  }
+
+  private static <T> void collectLevelOrderValues(TreeNode<T> node, ArrayList<T> counts) {
+    if (node == null) return;
+    if (node.left != null) counts.add(node.left.value);
+    if (node.right != null) counts.add(node.right.value);
+    collectLevelOrderValues(node.left, counts);
+    collectLevelOrderValues(node.right, counts);
+    return;
   }
 
   /**
@@ -59,8 +77,18 @@ public class Traversals {
    * @param node the node of the tree
    * @return the number of unique values in the tree, or 0 if the tree is null
    */
-  public static int countDistinctValues(TreeNode<Integer> node) {
-    return 0;
+  public static <T> int countDistinctValues(TreeNode<T> node) {
+    ArrayList<T> counts = new ArrayList<T>();
+    countDistinctValues(node, counts);
+    return counts.size();
+  }
+
+  private static <T> void countDistinctValues(TreeNode<T> node, ArrayList<T> counts) {
+    if (node == null) return;
+    if (counts.contains(node.value)) return;
+    counts.add(node.value);
+    countDistinctValues(node.left, counts);
+    countDistinctValues(node.right, counts);
   }
 
   /**
@@ -72,7 +100,28 @@ public class Traversals {
    * @return true if there exists a strictly increasing root-to-leaf path, false otherwise
    */
   public static boolean hasStrictlyIncreasingPath(TreeNode<Integer> node) {
-    return false;
+    if(node==null) return false;
+    if (node.left==null && node.right==null) return true;
+    if (node.left == null) return hasStrictlyIncreasingPathHelper(node.right);
+    if (node.left == null) return hasStrictlyIncreasingPathHelper(node.left);
+    if (!hasStrictlyIncreasingPathHelper(node.left) && !hasStrictlyIncreasingPathHelper(node.right)) return false;
+    return true;
+  }
+  private static boolean hasStrictlyIncreasingPathHelper(TreeNode<Integer> node) {
+    if (node==null) return true;
+    if (node.left == null) {
+      if (!hasStrictlyIncreasingPath(node.right)) return false;
+      else return true;
+    }
+    else if (node.right == null) {
+      if (!hasStrictlyIncreasingPath(node.left)) return false;
+      else return true;
+    }
+    else {
+      if (node.left.value < node.value && node.right.value < node.value) return false;
+      if (!hasStrictlyIncreasingPath(node.left) && !hasStrictlyIncreasingPath(node.right)) return false;
+      return true;
+    }
   }
 
   // OPTIONAL CHALLENGE
@@ -87,7 +136,12 @@ public class Traversals {
    * @return true if the trees have the same shape, false otherwise
    */
   public static <T> boolean haveSameShape(TreeNode<T> nodeA, TreeNode<T> nodeB) {
-    return false;
+    if (nodeA == null && nodeB == null) return true;
+    if (nodeA == null || nodeB == null) return false;
+
+    if (!haveSameShape(nodeA.left, nodeB.left)) return false;
+    if (!haveSameShape(nodeA.right, nodeB.right)) return false;
+    return true;
   }
 
 
